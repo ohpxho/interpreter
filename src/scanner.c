@@ -1,23 +1,17 @@
-#include "../lib/ut/utarray"
-#include "../lib/ut/uthash"
 #include "../include/scanner.h"
 
-typedef struct {
+UT_array scanToken(Scanner *scanner) {
 
-  void scanToken() {
+}
 
-  }
+char advance(Scanner *scanner) {
 
-  char advance() {
+}
 
-  }
+void addToken(Scanner *scanner, TokenType token) {
 
-  void addToken(TokenType token) {
+}
 
-  }
-  
-  void addToken(TokenType token, void *literal) {
+void addTokenLiteral(Scanner *scanner, TokenType token, void *literal) {
 
-  }
-
-} Scanner;
+}
