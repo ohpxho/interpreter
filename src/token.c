@@ -1,11 +1,4 @@
-#include <"../include/token_type.h">
-
-typedef struct {
-  TokenType type;
-  char *lexeme;
-  void *literal;
-  int line;
-} Token;
+#define "../include/token.h"
 
 char *token_to_string(Token token) {
   if (token == NULL)
