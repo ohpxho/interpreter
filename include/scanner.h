@@ -12,11 +12,12 @@ typedef struct {
   UT_array *tokens; 
 } Scanner;
 
-UT_array scanToken(Scanner *scanner);
+void scanToken(Scanner *scanner);
 char advance(Scanner *scanner);
 void addToken(Scanner *scanner, TokenType type);
 void addTokenLiteral(Scanner *scanner, TokenType type, void *literal);
 bool isAtEnd(Scanner *scanner);
+char *substring(char *src, char *desc, int start, int end);
 
 
 #endif

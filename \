@@ -33,8 +33,7 @@ void addToken(Scanner *scanner, TokenType type) {
 }
 
 void addTokenLiteral(Scanner *scanner, TokenType type, void *literal) {
-  char *substr = substring(scanne->source, start, current);
-  
+
 }
 
 bool isAtEnd(Scanner *scanner) {
@@ -42,18 +41,10 @@ bool isAtEnd(Scanner *scanner) {
 }
 
 char *substring(char *src, int start, int end) {
-  if (!src) {
-    return NULL;
-  }
-
   int len = strlen(src); 
-
-  if (start < 0 || end < 0 || start > end || start >= len || end >= len) {
-    return NULL;
-  }
-
-  int substrLen = (end - start) + 1; 
-  char *substr = (char*)malloc(substrLen + 1);
+  int subtrLen = (end - start) + 1; 
+  int curr = start
+  char *substr = (char*)malloc((end - start) + 1);
   
   if (!substr) {
     perror("Malloc Failed!");
@@ -64,8 +55,6 @@ char *substring(char *src, int start, int end) {
     substr[i] = src[curr];
     curr += 1;
   }
-  
-  substr[substrLen] = '\0';
 
   return substr;
 }
