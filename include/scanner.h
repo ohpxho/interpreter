@@ -4,7 +4,6 @@
 #define SCANNER_H
 
 #include <stdbool.h>
-#include "./token_type.h"
 #include "../lib/ut/utarray.h"
 
 typedef struct {
@@ -12,6 +11,7 @@ typedef struct {
   UT_array *tokens; 
 } Scanner;
 
+UT_array *scanTokens(Scanner *scanner);
 void scanToken(Scanner *scanner);
 char advance(Scanner *scanner);
 void addToken(Scanner *scanner, TokenType type);

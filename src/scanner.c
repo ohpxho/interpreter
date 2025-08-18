@@ -7,6 +7,19 @@ int start = 0;
 int current = 0;
 int line = 1;
 
+UT_array *scanTokens(Scanner *scanner) {
+  while (!isAtEnd(scanner)) {
+    start = current;
+    scanToken(scanner);  
+  } 
+  
+  Token *token = malloc(sizeof(Token));
+  token->type = TKN_EOF;
+  token->lexeme  = "";
+  token->literal = NULL;
+  token->line = line;
+}
+
 void scanToken(Scanner *scanner) {
   char c = advance(scanner);
   switch(c) {
@@ -21,6 +34,9 @@ void scanToken(Scanner *scanner) {
     case ';': addToken(scanner, SEMICOLON); break;
     case '/': addToken(scanner, SLASH); break;
     case '*': addToken(scanner, STAR); break;
+    default:
+      pferror("Unexpected character");
+      break;
   }
 }
 
@@ -33,12 +49,16 @@ void addToken(Scanner *scanner, TokenType type) {
 }
 
 void addTokenLiteral(Scanner *scanner, TokenType type, void *literal) {
-  char *substr = substring(scanne->source, start, current);
-  
+  char *substr = substring(scanner->source, start, current);
+  Token *token = malloc(sizeof(Token)); 
+  token->type = type;
+  token->lexeme = substr;
+  utarray_push_back(scanner->tokens, &token);
 }
 
 bool isAtEnd(Scanner *scanner) {
-  
+  int len = strlen(scanner->source);
+  return current >= len;
 }
 
 char *substring(char *src, int start, int end) {
@@ -52,20 +72,15 @@ char *substring(char *src, int start, int end) {
     return NULL;
   }
 
-  int substrLen = (end - start) + 1; 
-  char *substr = (char*)malloc(substrLen + 1);
+  int substrLen = (end - start) + 1; // +1 for null terminator 
+  char *substr = (char*)malloc(substrLen + 1); 
   
   if (!substr) {
     perror("Malloc Failed!");
     return NULL;
   }
-
-  for (int i = 0; i <= end; i++) {
-    substr[i] = src[curr];
-    curr += 1;
-  }
   
-  substr[substrLen] = '\0';
+  strncpy(substr, src, substrLen);
 
   return substr;
 }
