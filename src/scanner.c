@@ -32,10 +32,57 @@ void scanToken(Scanner *scanner) {
     case '-': addToken(scanner, MINUS); break;
     case '+': addToken(scanner, PLUS); break;
     case ';': addToken(scanner, SEMICOLON); break;
-    case '/': addToken(scanner, SLASH); break;
+    case '/': 
+      if(peek(scanner) == '/') {
+        while(peek(scanner) != '\n' && !isAtEnd(scanner)) current++;
+      } else {
+        addToken(scanner, SLASH);
+      }
+      break;
     case '*': addToken(scanner, STAR); break;
+    case '!': 
+      if(match(scanner, '=')) {
+        addToken(scanner, BANG_EQUAL) 
+      } else { 
+        addToken(scanner, BANG);
+      }
+      break;
+    case '=': 
+      if(match(scanner, '=') {
+        addToken(scanner, EQUAL_EQUAL);
+      } else {
+        addToken(scanner, EQUAL);
+      }
+      break;
+    case '>': 
+      if(match(scanner, '=')) {
+        addToken(scanner, GREATER_EQUAL);
+      }
+      else {
+        addToken(scanner, GREATER);
+      }
+      break;
+    case '<': 
+      if(match(scanner, '=')) {
+        addToken(scanner, LESS_EQUAL);
+      } else {
+        addToken(scanner, LESS);
+      }
+      break;
+    case ' ':
+    case '\t':
+    case '\r':
+      break;
+    case '\n':
+      line++;
+      break;
+    case '"': string(); break;
     default:
-      pferror("Unexpected character");
+      if(isDigit(c)) {
+        number(scanner);
+      } else {
+        pferror("Unexpected character");
+      }
       break;
   }
 }
@@ -83,4 +130,62 @@ char *substring(char *src, int start, int end) {
   strncpy(substr, src, substrLen);
 
   return substr;
+}
+
+void string(Scanner *scanner) {
+  int strt = current;
+  while(peek(scanner) != '"' && !isAtEnd(scanner)) {
+    if(peek(scanner) == '\n') line++;
+    advance(scanner);
+  }
+  
+  if(isAtEnd(scanner)) {
+    perror("String unterminated!");
+    return;
+  }
+
+  advance(scanner);
+
+  char *substr = substring(scanner->source, strt, current-1);
+  addTokenLitral(scanner, STRING, substr);
+}
+
+void number(Scanner *scanner) {
+  int start = current-1;
+  while(isDigit(peek(scanner))) {
+    advance(scanner);
+  }
+  
+  if(scanner->source[current] == '.' && isDigit(peekNext(scanner))) {
+    while(isDigit(peek(scanner))) {
+      advance(scanner);
+    }
+  }
+  char *end;
+  char *substr = substring(scanner, start, current-1);
+  double n = strtod(substr, &end);
+
+  addTokenLiteral(scanner, NUMBER,  n);
+}
+
+bool isDigit(char c) {
+  return c >= '0' or c <= '9'; 
+}
+
+bool match(Scanner *scanner, char *expected) {
+  if(isAtEnd(scanner)) return false;
+  if(!scanner->source[current] == expected) return false;
+
+  current++;
+  return true;
+}
+
+char peek(Scanner *scanner) {
+  if(isAtEnd(scanner)) return '\0';
+  return scanner->source[current];
+}
+
+char peekNext(Scanner *scanner) {
+  if(isAtEnd(scanner)) return '\0';
+  return scanner->source[current+1];
 }
