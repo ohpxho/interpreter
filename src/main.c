@@ -1,15 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#inclde "../include/scanner.h"
+#include "../lib/ut/utarray.h"
+#include "../lib/include/token.h"
 
 void run_prompt();
 void run_file(const char *path);
 void run(const char *source);
-
-typedef struct {
-  char *type;
-  char *lexeme;
-} Token;
 
 int main(int argc, char *argv[]) {
   if (argc > 2) {
@@ -23,20 +21,23 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
-int scanTokens(const char *source, Token **tokens_out) {
-  *tokens_out = malloc(sizeof(Token) * 1);
-  (*tokens_out)[0].type = "DUMMY_TOKEN";
-  (*tokens_out)[0].lexeme = "dummy";
-  return 1;
-}
+//TODO: make this shit run 
 
 void run(const char *source) {
-  Token *tokens = NULL;
-  int tokenCount = scanTokens(source, &tokens);
-
-  for (int i = 0; i < tokenCount; i++) {
-    printf("Token(type=%s, lexeme=%s)\n", tokens[i].type, tokens[i].lexeme);
+  UT_array *tokens;
+  UT_icd token_icd =  {
+    sizeof(Token),
+    NULL,
+    NULL,
+    NULL
   }
+  utarray_new(tokens, &token_icd);
+  struct Scanner *scanner = {
+    .source = source,
+    .tokens = tokens
+  };
+
+  scanTokens(scanner);
 
   free(tokens);
 }

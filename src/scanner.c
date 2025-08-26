@@ -2,12 +2,13 @@
 #include <string.h>
 #include "../include/scanner.h"
 #include "../include/token.h"
+#include "../lib/ut/uthash.h"
 
 int start = 0;
 int current = 0;
 int line = 1;
 
-UT_array *scanTokens(Scanner *scanner) {
+void scanTokens(Scanner *scanner) {
   while (!isAtEnd(scanner)) {
     start = current;
     scanToken(scanner);  
@@ -16,8 +17,8 @@ UT_array *scanTokens(Scanner *scanner) {
   Token *token = malloc(sizeof(Token));
   token->type = TKN_EOF;
   token->lexeme  = "";
-  token->literal = NULL;
-  token->line = line;
+  
+  addToken(token);
 }
 
 void scanToken(Scanner *scanner) {
@@ -80,6 +81,8 @@ void scanToken(Scanner *scanner) {
     default:
       if(isDigit(c)) {
         number(scanner);
+      } else if(isAlpha(c)) {
+        keyword(scanner);
       } else {
         pferror("Unexpected character");
       }
@@ -97,9 +100,12 @@ void addToken(Scanner *scanner, TokenType type) {
 
 void addTokenLiteral(Scanner *scanner, TokenType type, void *literal) {
   char *substr = substring(scanner->source, start, current);
-  Token *token = malloc(sizeof(Token)); 
-  token->type = type;
-  token->lexeme = substr;
+  Token *token = {
+    .type = type,
+    .lexeme = substr, 
+    .literal = literal,
+    .line = line
+  }
   utarray_push_back(scanner->tokens, &token);
 }
 
@@ -147,7 +153,7 @@ void string(Scanner *scanner) {
   advance(scanner);
 
   char *substr = substring(scanner->source, strt, current-1);
-  addTokenLitral(scanner, STRING, substr);
+  addTokenLiteral(scanner, STRING, substr);
 }
 
 void number(Scanner *scanner) {
@@ -166,6 +172,62 @@ void number(Scanner *scanner) {
   double n = strtod(substr, &end);
 
   addTokenLiteral(scanner, NUMBER,  n);
+}
+
+void keyword(Scanner *scanner) {
+  int start = current-1;
+  while(isAlphaNumeric(peek(scanner->source[current])) && !isAtEnd(scanner)) {
+    advance(scanner);
+  };
+
+  TokenType type;
+  char *substr = substring(scanner->source, start, current-1);
+  
+  if(strcmp(substr, "and") == 0) {
+    type = AND;
+  } else if(strcmp(substr, "class") == 0) {
+    type = CLASS;
+  } else if(strcmp(substr, "else") == 0) {
+    type = ELSE;
+  } else if(strcmp(substr, "false") == 0) {
+    type = FALSE;
+  } else if(strcmp(substr, "fun") == 0) {
+    type = FUN;
+  } else if(strcmp(substr, "for") == 0) {
+    type = FOR;
+  } else if(strcmp(substr, "if") == 0) {
+    type = IF;
+  } else if(strcmp(substr, "nil") == 0) {
+    type = NIL;
+  } else if(strcmp(substr, "or") == 0) {
+    type = OR;
+  } else if(strcmp(substr, "print") == 0) {
+    type = PRINT;
+  } else if(strcmp(substr, "return") == 0) {
+    type = RETURN;
+  } else if(strcmp(substr, "super") == 0) {
+    type = SUPER;
+  } else if(strcmp(substr, "this") == 0) {
+    type = THIS;
+  } else if(strcmp(substr, "true") == 0) {
+    type = TRUE;
+  } else if(strcmp(substr, "var") == 0) {
+    type = VAR;
+  } else if(strcmp(substr, "while") == 0) {
+    type = WHILE;
+  } else {
+    type = IDENTIFIER;
+  }
+
+  addToken(scanner, type);
+}
+
+bool isAlphaNumeric(char c) {
+  return isDigit(c) || isAlpha(c);
+}
+
+bool isAlpha(char c) {
+  return (c >= 'a' && c <= 'z') || (c >= 'A' and c <= 'Z') || (c == '-');
 }
 
 bool isDigit(char c) {

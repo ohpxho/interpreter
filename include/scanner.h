@@ -9,19 +9,22 @@ typedef struct {
   UT_array *tokens; 
 } Scanner;
 
-UT_array *scanTokens(Scanner *scanner);
+void scanTokens(Scanner *scanner);
 void scanToken(Scanner *scanner);
 char advance(Scanner *scanner);
 void addToken(Scanner *scanner, TokenType type);
 void addTokenLiteral(Scanner *scanner, TokenType type, void *literal);
 bool isAtEnd(Scanner *scanner);
-char *substring(char *src, char *desc, int start, int end);
+char *substring(char *src, int start, int end);
 bool match(Scanner *scanner, char *expected);
 bool isDigit(char c);
+bool isAlpha(char c);
+bool isAlphaNumeric(char c);
 char peek(scanner);
 char peekNext(scanner);
 void string(Scanner *scanner);
 void number(Scanner *scanner);
+void keyword(Scanner *scanner);
 
 
 #endif
