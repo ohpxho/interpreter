@@ -1,13 +1,15 @@
+#include "../include/scanner.h"
+#include "../include/token.h"
+#include "../lib/ut/utarray.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#inclde "../include/scanner.h"
-#include "../lib/ut/utarray.h"
-#include "../lib/include/token.h"
 
-void run_prompt();
+void run_prompt(void);
 void run_file(const char *path);
 void run(const char *source);
+void error(int line, char *message);
+void report(int line, char *where, char *message);
 
 int main(int argc, char *argv[]) {
   if (argc > 2) {
@@ -21,21 +23,15 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
-//TODO: make this shit run 
+// TODO: make this shit run
 
 void run(const char *source) {
   UT_array *tokens;
-  UT_icd token_icd =  {
-    sizeof(Token),
-    NULL,
-    NULL,
-    NULL
-  }
+  UT_icd token_icd = {sizeof(Token), NULL, NULL, NULL}
+
   utarray_new(tokens, &token_icd);
-  struct Scanner *scanner = {
-    .source = source,
-    .tokens = tokens
-  };
+
+  struct Scanner *scanner = {.source = source, .tokens = tokens};
 
   scanTokens(scanner);
 
@@ -79,8 +75,8 @@ void run_prompt() {
   }
 }
 
-void error(int line, string message) { report(line, "", message); }
+void error(int line, char *message) { report(line, "", message); }
 
-void report(int line, string where, string message) {
-  printf("[line: %s ] Error %s: %s", line, where, message);
+void report(int line, char *where, char *message) {
+  printf("[line: %d ] Error %s: %s", line, where, message);
 }

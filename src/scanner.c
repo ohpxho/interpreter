@@ -1,8 +1,8 @@
-#include <stdlib.h>
-#include <string.h>
 #include "../include/scanner.h"
 #include "../include/token.h"
 #include "../lib/ut/uthash.h"
+#include <stdlib.h>
+#include <string.h>
 
 int start = 0;
 int current = 0;
@@ -11,63 +11,84 @@ int line = 1;
 void scanTokens(Scanner *scanner) {
   while (!isAtEnd(scanner)) {
     start = current;
-    scanToken(scanner);  
-  } 
-  
+    scanToken(scanner);
+  }
+
   Token *token = malloc(sizeof(Token));
   token->type = TKN_EOF;
-  token->lexeme  = "";
-  
+  token->lexeme = "";
+
   addToken(token);
 }
 
 void scanToken(Scanner *scanner) {
   char c = advance(scanner);
-  switch(c) {
-    case '(': addToken(scanner, LEFT_PAREN); break;
-    case ')': addToken(scanner, RIGHT_PAREN); break;
-    case '{': addToken(scanner, LEFT_BRACE); break;
-    case '}': addToken(scanner, RIGHT_BRACE); break;
-    case ',': addToken(scanner, COMMA); break;
-    case '.': addToken(scanner, DOT); break;
-    case '-': addToken(scanner, MINUS); break;
-    case '+': addToken(scanner, PLUS); break;
-    case ';': addToken(scanner, SEMICOLON); break;
-    case '/': 
-      if(peek(scanner) == '/') {
-        while(peek(scanner) != '\n' && !isAtEnd(scanner)) current++;
-      } else {
-        addToken(scanner, SLASH);
-      }
-      break;
-    case '*': addToken(scanner, STAR); break;
-    case '!': 
-      if(match(scanner, '=')) {
-        addToken(scanner, BANG_EQUAL) 
-      } else { 
-        addToken(scanner, BANG);
-      }
-      break;
-    case '=': 
+  switch (c) {
+  case '(':
+    addToken(scanner, LEFT_PAREN);
+    break;
+  case ')':
+    addToken(scanner, RIGHT_PAREN);
+    break;
+  case '{':
+    addToken(scanner, LEFT_BRACE);
+    break;
+  case '}':
+    addToken(scanner, RIGHT_BRACE);
+    break;
+  case ',':
+    addToken(scanner, COMMA);
+    break;
+  case '.':
+    addToken(scanner, DOT);
+    break;
+  case '-':
+    addToken(scanner, MINUS);
+    break;
+  case '+':
+    addToken(scanner, PLUS);
+    break;
+  case ';':
+    addToken(scanner, SEMICOLON);
+    break;
+  case '/':
+    if (peek(scanner) == '/') {
+      while (peek(scanner) != '\n' && !isAtEnd(scanner))
+        current++;
+    } else {
+      addToken(scanner, SLASH);
+    }
+    break;
+  case '*':
+    addToken(scanner, STAR);
+    break;
+  case '!':
+    if (match(scanner, '=')) {
+      addToken(scanner, BANG_EQUAL)
+    } else {
+      addToken(scanner, BANG);
+    }
+    break;
+  case '=':
       if(match(scanner, '=') {
-        addToken(scanner, EQUAL_EQUAL);
+      addToken(scanner, EQUAL_EQUAL);
       } else {
-        addToken(scanner, EQUAL);
+      addToken(scanner, EQUAL);
       }
       break;
     case '>': 
       if(match(scanner, '=')) {
-        addToken(scanner, GREATER_EQUAL);
+      addToken(scanner, GREATER_EQUAL);
       }
       else {
-        addToken(scanner, GREATER);
+      addToken(scanner, GREATER);
       }
       break;
     case '<': 
       if(match(scanner, '=')) {
-        addToken(scanner, LESS_EQUAL);
+      addToken(scanner, LESS_EQUAL);
       } else {
-        addToken(scanner, LESS);
+      addToken(scanner, LESS);
       }
       break;
     case ' ':
@@ -80,19 +101,17 @@ void scanToken(Scanner *scanner) {
     case '"': string(); break;
     default:
       if(isDigit(c)) {
-        number(scanner);
+      number(scanner);
       } else if(isAlpha(c)) {
-        keyword(scanner);
+      keyword(scanner);
       } else {
-        pferror("Unexpected character");
+      pferror("Unexpected character");
       }
       break;
   }
 }
 
-char advance(Scanner *scanner) {
-  return scanner->source[current++];
-}
+char advance(Scanner *scanner) { return scanner->source[current++]; }
 
 void addToken(Scanner *scanner, TokenType type) {
   addTokenLitral(scanner, type, NULL);
@@ -100,13 +119,10 @@ void addToken(Scanner *scanner, TokenType type) {
 
 void addTokenLiteral(Scanner *scanner, TokenType type, void *literal) {
   char *substr = substring(scanner->source, start, current);
-  Token *token = {
-    .type = type,
-    .lexeme = substr, 
-    .literal = literal,
-    .line = line
-  }
-  utarray_push_back(scanner->tokens, &token);
+  Token *token = {.type = type,
+                  .lexeme = substr,
+                  .literal = literal,
+                  .line = line} utarray_push_back(scanner->tokens, &token);
 }
 
 bool isAtEnd(Scanner *scanner) {
@@ -119,20 +135,20 @@ char *substring(char *src, int start, int end) {
     return NULL;
   }
 
-  int len = strlen(src); 
+  int len = strlen(src);
 
   if (start < 0 || end < 0 || start > end || start >= len || end >= len) {
     return NULL;
   }
 
-  int substrLen = (end - start) + 1; // +1 for null terminator 
-  char *substr = (char*)malloc(substrLen + 1); 
-  
+  int substrLen = (end - start) + 1; // +1 for null terminator
+  char *substr = (char *)malloc(substrLen + 1);
+
   if (!substr) {
     perror("Malloc Failed!");
     return NULL;
   }
-  
+
   strncpy(substr, src, substrLen);
 
   return substr;
@@ -140,80 +156,81 @@ char *substring(char *src, int start, int end) {
 
 void string(Scanner *scanner) {
   int strt = current;
-  while(peek(scanner) != '"' && !isAtEnd(scanner)) {
-    if(peek(scanner) == '\n') line++;
+  while (peek(scanner) != '"' && !isAtEnd(scanner)) {
+    if (peek(scanner) == '\n')
+      line++;
     advance(scanner);
   }
-  
-  if(isAtEnd(scanner)) {
+
+  if (isAtEnd(scanner)) {
     perror("String unterminated!");
     return;
   }
 
   advance(scanner);
 
-  char *substr = substring(scanner->source, strt, current-1);
+  char *substr = substring(scanner->source, strt, current - 1);
   addTokenLiteral(scanner, STRING, substr);
 }
 
 void number(Scanner *scanner) {
-  int start = current-1;
-  while(isDigit(peek(scanner))) {
+  int start = current - 1;
+  while (isDigit(peek(scanner))) {
     advance(scanner);
   }
-  
-  if(scanner->source[current] == '.' && isDigit(peekNext(scanner))) {
-    while(isDigit(peek(scanner))) {
+
+  if (scanner->source[current] == '.' && isDigit(peekNext(scanner))) {
+    while (isDigit(peek(scanner))) {
       advance(scanner);
     }
   }
   char *end;
-  char *substr = substring(scanner, start, current-1);
+  char *substr = substring(scanner, start, current - 1);
   double n = strtod(substr, &end);
 
-  addTokenLiteral(scanner, NUMBER,  n);
+  addTokenLiteral(scanner, NUMBER, n);
 }
 
 void keyword(Scanner *scanner) {
-  int start = current-1;
-  while(isAlphaNumeric(peek(scanner->source[current])) && !isAtEnd(scanner)) {
+  int start = current - 1;
+  while (isAlphaNumeric(peek(scanner->source[current])) && !isAtEnd(scanner)) {
     advance(scanner);
   };
 
   TokenType type;
-  char *substr = substring(scanner->source, start, current-1);
-  
-  if(strcmp(substr, "and") == 0) {
+  char *substr = substring(scanner->source, start, current - 1);
+
+  if (strcmp(substr, "and") == 0) {
     type = AND;
-  } else if(strcmp(substr, "class") == 0) {
+  } else if (strcmp(substr, "class") == 0) {
     type = CLASS;
-  } else if(strcmp(substr, "else") == 0) {
+  } else if (strcmp(substr, "else") == 0) {
     type = ELSE;
-  } else if(strcmp(substr, "false") == 0) {
+  } else if (strcmp(substr, "false") == 0) {
     type = FALSE;
-  } else if(strcmp(substr, "fun") == 0) {
+  } else if (strcmp(substr, "fun") == 0) {
     type = FUN;
-  } else if(strcmp(substr, "for") == 0) {
+  } else if (strcmp(substr, "for") == 0) {
     type = FOR;
-  } else if(strcmp(substr, "if") == 0) {
+  } else if (strcmp(substr, "if") == 0) {
     type = IF;
-  } else if(strcmp(substr, "nil") == 0) {
+  } else if (strcmp(substr, "nil") == 0) {
     type = NIL;
-  } else if(strcmp(substr, "or") == 0) {
+  } else if (strcmp(substr, "or") == 0) {
     type = OR;
-  } else if(strcmp(substr, "print") == 0) {
+  } else if (strcmp(substr, "print") == 0) {
     type = PRINT;
-  } else if(strcmp(substr, "return") == 0) {
+  } else if (strcmp(substr, "return") == 0) {
     type = RETURN;
-  } else if(strcmp(substr, "super") == 0) {
+  } else if (strcmp(substr, "super") == 0) {
     type = SUPER;
-  } else if(strcmp(substr, "this") == 0) {
+  } else if (strcmp(substr, "this") == 0) {
     type = THIS;
-  } else if(strcmp(substr, "true") == 0) {
+  } else if (strcmp(substr, "true") == 0) {
     type = TRUE;
-  } else if(strcmp(substr, "var") == 0) {
+  } else if (strcmp(substr, "var") == 0) {
     type = VAR;
-  } else if(strcmp(substr, "while") == 0) {
+  } else if (strcmp(substr, "while") == 0) {
     type = WHILE;
   } else {
     type = IDENTIFIER;
@@ -222,32 +239,32 @@ void keyword(Scanner *scanner) {
   addToken(scanner, type);
 }
 
-bool isAlphaNumeric(char c) {
-  return isDigit(c) || isAlpha(c);
-}
+bool isAlphaNumeric(char c) { return isDigit(c) || isAlpha(c); }
 
 bool isAlpha(char c) {
   return (c >= 'a' && c <= 'z') || (c >= 'A' and c <= 'Z') || (c == '-');
 }
 
-bool isDigit(char c) {
-  return c >= '0' or c <= '9'; 
-}
+bool isDigit(char c) { return c >= '0' or c <= '9'; }
 
 bool match(Scanner *scanner, char *expected) {
-  if(isAtEnd(scanner)) return false;
-  if(!scanner->source[current] == expected) return false;
+  if (isAtEnd(scanner))
+    return false;
+  if (!scanner->source[current] == expected)
+    return false;
 
   current++;
   return true;
 }
 
 char peek(Scanner *scanner) {
-  if(isAtEnd(scanner)) return '\0';
+  if (isAtEnd(scanner))
+    return '\0';
   return scanner->source[current];
 }
 
 char peekNext(Scanner *scanner) {
-  if(isAtEnd(scanner)) return '\0';
-  return scanner->source[current+1];
+  if (isAtEnd(scanner))
+    return '\0';
+  return scanner->source[current + 1];
 }

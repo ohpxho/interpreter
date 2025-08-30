@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include "../lib/ut/utarray.h"
+#include "token.h"
 
 typedef struct {
   char *source;
@@ -20,8 +21,8 @@ bool match(Scanner *scanner, char *expected);
 bool isDigit(char c);
 bool isAlpha(char c);
 bool isAlphaNumeric(char c);
-char peek(scanner);
-char peekNext(scanner);
+char peek(Scanner *scanner);
+char peekNext(Scanner *scanner);
 void string(Scanner *scanner);
 void number(Scanner *scanner);
 void keyword(Scanner *scanner);
