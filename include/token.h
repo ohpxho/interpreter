@@ -11,7 +11,7 @@ typedef struct {
   int line;
 } Token;
 
-char *tokenToString(Token token);
+char *tokenToString(Token *token);
 
 #endif
 

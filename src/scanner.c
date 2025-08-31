@@ -1,6 +1,7 @@
 #include "../include/scanner.h"
 #include "../include/token.h"
 #include "../lib/ut/uthash.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -14,11 +15,7 @@ void scanTokens(Scanner *scanner) {
     scanToken(scanner);
   }
 
-  Token *token = malloc(sizeof(Token));
-  token->type = TKN_EOF;
-  token->lexeme = "";
-
-  addToken(token);
+  addToken(scanner, TKN_EOF);
 }
 
 void scanToken(Scanner *scanner) {
@@ -64,13 +61,13 @@ void scanToken(Scanner *scanner) {
     break;
   case '!':
     if (match(scanner, '=')) {
-      addToken(scanner, BANG_EQUAL)
+      addToken(scanner, BANG_EQUAL);
     } else {
       addToken(scanner, BANG);
     }
     break;
   case '=':
-      if(match(scanner, '=') {
+      if(match(scanner, '=')) {
       addToken(scanner, EQUAL_EQUAL);
       } else {
       addToken(scanner, EQUAL);
@@ -98,14 +95,13 @@ void scanToken(Scanner *scanner) {
     case '\n':
       line++;
       break;
-    case '"': string(); break;
+    case '"': string(scanner); break;
     default:
       if(isDigit(c)) {
       number(scanner);
       } else if(isAlpha(c)) {
       keyword(scanner);
       } else {
-      pferror("Unexpected character");
       }
       break;
   }
@@ -114,15 +110,20 @@ void scanToken(Scanner *scanner) {
 char advance(Scanner *scanner) { return scanner->source[current++]; }
 
 void addToken(Scanner *scanner, TokenType type) {
-  addTokenLitral(scanner, type, NULL);
+  addTokenLiteral(scanner, type, NULL);
 }
 
 void addTokenLiteral(Scanner *scanner, TokenType type, void *literal) {
   char *substr = substring(scanner->source, start, current);
-  Token *token = {.type = type,
-                  .lexeme = substr,
-                  .literal = literal,
-                  .line = line} utarray_push_back(scanner->tokens, &token);
+  Token token = 
+      {
+      .type = type,
+      .lexeme = substr,
+      .literal = literal,
+      .line = line
+    }; 
+  
+  utarray_push_back(scanner->tokens, &token);
 }
 
 bool isAtEnd(Scanner *scanner) {
@@ -130,7 +131,7 @@ bool isAtEnd(Scanner *scanner) {
   return current >= len;
 }
 
-char *substring(char *src, int start, int end) {
+char *substring(const char *src, int start, int end) {
   if (!src) {
     return NULL;
   }
@@ -145,7 +146,7 @@ char *substring(char *src, int start, int end) {
   char *substr = (char *)malloc(substrLen + 1);
 
   if (!substr) {
-    perror("Malloc Failed!");
+    printf("%s", "Malloc Failed");
     return NULL;
   }
 
@@ -163,7 +164,7 @@ void string(Scanner *scanner) {
   }
 
   if (isAtEnd(scanner)) {
-    perror("String unterminated!");
+    printf("%s", "String unterminated");
     return;
   }
 
@@ -185,15 +186,15 @@ void number(Scanner *scanner) {
     }
   }
   char *end;
-  char *substr = substring(scanner, start, current - 1);
+  char *substr = substring(scanner->source, start, current - 1);
   double n = strtod(substr, &end);
 
-  addTokenLiteral(scanner, NUMBER, n);
+  addTokenLiteral(scanner, NUMBER, &n);
 }
 
 void keyword(Scanner *scanner) {
   int start = current - 1;
-  while (isAlphaNumeric(peek(scanner->source[current])) && !isAtEnd(scanner)) {
+  while (isAlphaNumeric(peek(scanner)) && !isAtEnd(scanner)) {
     advance(scanner);
   };
 
@@ -242,15 +243,15 @@ void keyword(Scanner *scanner) {
 bool isAlphaNumeric(char c) { return isDigit(c) || isAlpha(c); }
 
 bool isAlpha(char c) {
-  return (c >= 'a' && c <= 'z') || (c >= 'A' and c <= 'Z') || (c == '-');
+  return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c == '-');
 }
 
-bool isDigit(char c) { return c >= '0' or c <= '9'; }
+bool isDigit(char c) { return c >= '0' || c <= '9'; }
 
-bool match(Scanner *scanner, char *expected) {
+bool match(Scanner *scanner, char expected) {
   if (isAtEnd(scanner))
     return false;
-  if (!scanner->source[current] == expected)
+  if (!(scanner->source[current] == expected))
     return false;
 
   current++;

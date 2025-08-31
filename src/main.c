@@ -27,13 +27,13 @@ int main(int argc, char *argv[]) {
 
 void run(const char *source) {
   UT_array *tokens;
-  UT_icd token_icd = {sizeof(Token), NULL, NULL, NULL}
+  UT_icd token_icd = {sizeof(Token), NULL, NULL, NULL};
 
   utarray_new(tokens, &token_icd);
 
-  struct Scanner *scanner = {.source = source, .tokens = tokens};
+  Scanner scanner = {.source = source, .tokens = tokens};
 
-  scanTokens(scanner);
+  scanTokens(&scanner);
 
   free(tokens);
 }

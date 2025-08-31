@@ -6,7 +6,7 @@
 #include "token.h"
 
 typedef struct {
-  char *source;
+  const char *source;
   UT_array *tokens; 
 } Scanner;
 
@@ -16,8 +16,8 @@ char advance(Scanner *scanner);
 void addToken(Scanner *scanner, TokenType type);
 void addTokenLiteral(Scanner *scanner, TokenType type, void *literal);
 bool isAtEnd(Scanner *scanner);
-char *substring(char *src, int start, int end);
-bool match(Scanner *scanner, char *expected);
+char *substring(const char *src, int start, int end);
+bool match(Scanner *scanner, char expected);
 bool isDigit(char c);
 bool isAlpha(char c);
 bool isAlphaNumeric(char c);
