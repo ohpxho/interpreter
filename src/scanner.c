@@ -124,6 +124,7 @@ void addTokenLiteral(Scanner *scanner, TokenType type, void *literal) {
     }; 
   
   utarray_push_back(scanner->tokens, &token);
+  free(substr);
 }
 
 bool isAtEnd(Scanner *scanner) {
@@ -190,6 +191,7 @@ void number(Scanner *scanner) {
   double n = strtod(substr, &end);
 
   addTokenLiteral(scanner, NUMBER, &n);
+  free(substr);
 }
 
 void keyword(Scanner *scanner) {
@@ -238,6 +240,7 @@ void keyword(Scanner *scanner) {
   }
 
   addToken(scanner, type);
+  free(substr);
 }
 
 bool isAlphaNumeric(char c) { return isDigit(c) || isAlpha(c); }
@@ -246,7 +249,7 @@ bool isAlpha(char c) {
   return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c == '-');
 }
 
-bool isDigit(char c) { return c >= '0' || c <= '9'; }
+bool isDigit(char c) { return c >= '0' && c <= '9'; }
 
 bool match(Scanner *scanner, char expected) {
   if (isAtEnd(scanner))

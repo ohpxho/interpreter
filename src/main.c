@@ -34,8 +34,15 @@ void run(const char *source) {
   Scanner scanner = {.source = source, .tokens = tokens};
 
   scanTokens(&scanner);
+  
+  Token *p;
+  for(p=(Token*)utarray_front(scanner.tokens);
+        p!=NULL;
+        p=(Token*)utarray_next(scanner.tokens,p)) {
+    printf("%s\n", tokenToString(p));
+  }
 
-  free(tokens);
+  utarray_free(tokens);
 }
 
 void run_file(const char *path) {
@@ -48,7 +55,6 @@ void run_file(const char *path) {
   fseek(file, 0L, SEEK_END);   // set the file position at the end of the stream
   long fileSize = ftell(file); // get the position
   rewind(file);                // take the position of the file at the beginning
-
   char *buffer = (char *)malloc(fileSize + 1);
   if (!buffer) {
     fprintf(stderr, "Not enough memory to read \"%s\".\n", path);
