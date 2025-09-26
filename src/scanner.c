@@ -67,43 +67,44 @@ void scanToken(Scanner *scanner) {
     }
     break;
   case '=':
-      if(match(scanner, '=')) {
+    if (match(scanner, '=')) {
       addToken(scanner, EQUAL_EQUAL);
-      } else {
+    } else {
       addToken(scanner, EQUAL);
-      }
-      break;
-    case '>': 
-      if(match(scanner, '=')) {
+    }
+    break;
+  case '>':
+    if (match(scanner, '=')) {
       addToken(scanner, GREATER_EQUAL);
-      }
-      else {
+    } else {
       addToken(scanner, GREATER);
-      }
-      break;
-    case '<': 
-      if(match(scanner, '=')) {
+    }
+    break;
+  case '<':
+    if (match(scanner, '=')) {
       addToken(scanner, LESS_EQUAL);
-      } else {
+    } else {
       addToken(scanner, LESS);
-      }
-      break;
-    case ' ':
-    case '\t':
-    case '\r':
-      break;
-    case '\n':
-      line++;
-      break;
-    case '"': string(scanner); break;
-    default:
-      if(isDigit(c)) {
+    }
+    break;
+  case ' ':
+  case '\t':
+  case '\r':
+    break;
+  case '\n':
+    line++;
+    break;
+  case '"':
+    string(scanner);
+    break;
+  default:
+    if (isDigit(c)) {
       number(scanner);
-      } else if(isAlpha(c)) {
+    } else if (isAlpha(c)) {
       keyword(scanner);
-      } else {
-      }
-      break;
+    } else {
+    }
+    break;
   }
 }
 
@@ -115,14 +116,10 @@ void addToken(Scanner *scanner, TokenType type) {
 
 void addTokenLiteral(Scanner *scanner, TokenType type, void *literal) {
   char *substr = substring(scanner->source, start, current);
-  Token token = 
-      {
-      .type = type,
-      .lexeme = substr,
-      .literal = literal,
-      .line = line
-    }; 
-  
+  printf("lexeme: %s\n", substr);
+  Token token = {
+      .type = type, .lexeme = substr, .literal = literal, .line = line};
+
   utarray_push_back(scanner->tokens, &token);
   free(substr);
 }

@@ -9,7 +9,7 @@ void run_prompt(void);
 void run_file(const char *path);
 void run(const char *source);
 void error(int line, char *message);
-void report(int line, char *where, char *message);
+void report(int line, const char *where, char *message);
 
 int main(int argc, char *argv[]) {
   if (argc > 2) {
@@ -24,7 +24,6 @@ int main(int argc, char *argv[]) {
 }
 
 // TODO: make this shit run
-
 void run(const char *source) {
   UT_array *tokens;
   UT_icd token_icd = {sizeof(Token), NULL, NULL, NULL};
@@ -34,11 +33,10 @@ void run(const char *source) {
   Scanner scanner = {.source = source, .tokens = tokens};
 
   scanTokens(&scanner);
-  
+
   Token *p;
-  for(p=(Token*)utarray_front(scanner.tokens);
-        p!=NULL;
-        p=(Token*)utarray_next(scanner.tokens,p)) {
+  for (p = (Token *)utarray_front(scanner.tokens); p != NULL;
+       p = (Token *)utarray_next(scanner.tokens, p)) {
     printf("%s\n", tokenToString(p));
   }
 
@@ -70,7 +68,7 @@ void run_file(const char *path) {
   free(buffer);
 }
 
-void run_prompt() {
+void run_prompt(void) {
   char line[1024];
 
   for (;;) {
@@ -83,6 +81,6 @@ void run_prompt() {
 
 void error(int line, char *message) { report(line, "", message); }
 
-void report(int line, char *where, char *message) {
+void report(int line, const char *where, char *message) {
   printf("[line: %d ] Error %s: %s", line, where, message);
 }
