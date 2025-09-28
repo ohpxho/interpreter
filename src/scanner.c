@@ -111,17 +111,23 @@ void scanToken(Scanner *scanner) {
 char advance(Scanner *scanner) { return scanner->source[current++]; }
 
 void addToken(Scanner *scanner, TokenType type) {
-  addTokenLiteral(scanner, type, NULL);
+  TokenLiteral *literal = malloc(sizeof(TokenLiteral));
+  *literal = (TokenLiteral){
+    .type = TL_NULL
+  };
+  addTokenLiteral(scanner, type, literal);
 }
 
-void addTokenLiteral(Scanner *scanner, TokenType type, void *literal) {
-  char *substr = substring(scanner->source, start, current);
-  printf("lexeme: %s\n", substr);
+void addTokenLiteral(Scanner *scanner, TokenType type, TokenLiteral *literal) {
+  char *substr = NULL;
+  
+  if(type != TKN_EOF) {
+    substr = substring(scanner->source, start, current-1);
+  } 
+
   Token token = {
       .type = type, .lexeme = substr, .literal = literal, .line = line};
-
   utarray_push_back(scanner->tokens, &token);
-  free(substr);
 }
 
 bool isAtEnd(Scanner *scanner) {
@@ -148,13 +154,12 @@ char *substring(const char *src, int start, int end) {
     return NULL;
   }
 
-  strncpy(substr, src, substrLen);
+  strncpy(substr, src + start, substrLen);
 
   return substr;
 }
 
 void string(Scanner *scanner) {
-  int strt = current;
   while (peek(scanner) != '"' && !isAtEnd(scanner)) {
     if (peek(scanner) == '\n')
       line++;
@@ -162,18 +167,25 @@ void string(Scanner *scanner) {
   }
 
   if (isAtEnd(scanner)) {
-    printf("%s", "String unterminated");
+    printf("%s", "String unterminated\n");
     return;
   }
 
   advance(scanner);
+  
+  char *substr = substring(scanner->source, start+1, current - 2);
+  
+  TokenLiteral *literal = malloc(sizeof(TokenLiteral));
 
-  char *substr = substring(scanner->source, strt, current - 1);
-  addTokenLiteral(scanner, STRING, substr);
+  *literal = (TokenLiteral){
+    .value.s = substr,
+    .type = TL_STRING
+  };
+
+  addTokenLiteral(scanner, STRING, literal);
 }
 
 void number(Scanner *scanner) {
-  int start = current - 1;
   while (isDigit(peek(scanner))) {
     advance(scanner);
   }
@@ -183,16 +195,19 @@ void number(Scanner *scanner) {
       advance(scanner);
     }
   }
-  char *end;
-  char *substr = substring(scanner->source, start, current - 1);
-  double n = strtod(substr, &end);
+  char *substr = substring(scanner->source, start, current-1);
+  double n = strtod(substr, NULL);
 
-  addTokenLiteral(scanner, NUMBER, &n);
-  free(substr);
+  TokenLiteral *literal = malloc(sizeof(TokenLiteral)); 
+  *literal = (TokenLiteral){
+    .value.d = n,
+    .type = TL_DOUBLE
+  };
+
+  addTokenLiteral(scanner, NUMBER, literal);
 }
 
 void keyword(Scanner *scanner) {
-  int start = current - 1;
   while (isAlphaNumeric(peek(scanner)) && !isAtEnd(scanner)) {
     advance(scanner);
   };
@@ -237,7 +252,6 @@ void keyword(Scanner *scanner) {
   }
 
   addToken(scanner, type);
-  free(substr);
 }
 
 bool isAlphaNumeric(char c) { return isDigit(c) || isAlpha(c); }

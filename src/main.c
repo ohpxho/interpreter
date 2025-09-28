@@ -34,12 +34,12 @@ void run(const char *source) {
 
   scanTokens(&scanner);
 
-  Token *p;
-  for (p = (Token *)utarray_front(scanner.tokens); p != NULL;
-       p = (Token *)utarray_next(scanner.tokens, p)) {
+  Token *p = NULL;
+  
+  while((p = (Token *)utarray_next(scanner.tokens, p))) {
     printf("%s\n", tokenToString(p));
   }
-
+  
   utarray_free(tokens);
 }
 

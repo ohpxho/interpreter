@@ -4,10 +4,23 @@
 
 #include "token_type.h"
 
+typedef enum {
+  TL_NULL, TL_INTEGER, TL_DOUBLE, TL_STRING
+} TokenLiteralType;
+
+typedef struct {
+  union {
+    char *s;
+    double d;
+    int i;
+  } value;
+  TokenLiteralType type;
+} TokenLiteral;
+
 typedef struct {
   TokenType type;
   char *lexeme;
-  void *literal;
+  TokenLiteral *literal; 
   int line;
 } Token;
 

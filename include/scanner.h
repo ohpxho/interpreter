@@ -14,7 +14,7 @@ void scanTokens(Scanner *scanner);
 void scanToken(Scanner *scanner);
 char advance(Scanner *scanner);
 void addToken(Scanner *scanner, TokenType type);
-void addTokenLiteral(Scanner *scanner, TokenType type, void *literal);
+void addTokenLiteral(Scanner *scanner, TokenType type, TokenLiteral *literal);
 bool isAtEnd(Scanner *scanner);
 char *substring(const char *src, int start, int end);
 bool match(Scanner *scanner, char expected);

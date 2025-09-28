@@ -1,5 +1,9 @@
 Makefile
 CMakeFiles/
 
+*.o
+obj/
+
 clox.dsYM/
 clox
+*.o
