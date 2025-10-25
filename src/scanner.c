@@ -112,18 +112,18 @@ char advance(Scanner *scanner) { return scanner->source[current++]; }
 
 void addToken(Scanner *scanner, TokenType type) {
   TokenLiteral *literal = malloc(sizeof(TokenLiteral));
-  *literal = (TokenLiteral){
-    .type = TL_NULL
-  };
+  *literal = (TokenLiteral){.type = TL_NULL};
   addTokenLiteral(scanner, type, literal);
 }
 
 void addTokenLiteral(Scanner *scanner, TokenType type, TokenLiteral *literal) {
   char *substr = NULL;
-  
-  if(type != TKN_EOF) {
-    substr = substring(scanner->source, start, current-1);
-  } 
+
+  if (type != TKN_EOF) {
+    substr = substring(scanner->source, start, current - 1);
+  }
+
+  printf("%s ", substr);
 
   Token token = {
       .type = type, .lexeme = substr, .literal = literal, .line = line};
@@ -135,18 +135,18 @@ bool isAtEnd(Scanner *scanner) {
   return current >= len;
 }
 
-char *substring(const char *src, int start, int end) {
+char *substring(const char *src, int strt, int end) {
   if (!src) {
     return NULL;
   }
 
   int len = strlen(src);
 
-  if (start < 0 || end < 0 || start > end || start >= len || end >= len) {
+  if (start < 0 || end < 0 || strt > end || strt >= len || end >= len) {
     return NULL;
   }
 
-  int substrLen = (end - start) + 1; // +1 for null terminator
+  int substrLen = (end - strt) + 10; // +1 for null terminator
   char *substr = (char *)malloc(substrLen + 1);
 
   if (!substr) {
@@ -154,7 +154,7 @@ char *substring(const char *src, int start, int end) {
     return NULL;
   }
 
-  strncpy(substr, src + start, substrLen);
+  strncpy(substr, src + strt, substrLen);
 
   return substr;
 }
@@ -172,15 +172,12 @@ void string(Scanner *scanner) {
   }
 
   advance(scanner);
-  
-  char *substr = substring(scanner->source, start+1, current - 2);
-  
+
+  char *substr = substring(scanner->source, start + 1, current - 2);
+
   TokenLiteral *literal = malloc(sizeof(TokenLiteral));
 
-  *literal = (TokenLiteral){
-    .value.s = substr,
-    .type = TL_STRING
-  };
+  *literal = (TokenLiteral){.value.s = substr, .type = TL_STRING};
 
   addTokenLiteral(scanner, STRING, literal);
 }
@@ -195,14 +192,11 @@ void number(Scanner *scanner) {
       advance(scanner);
     }
   }
-  char *substr = substring(scanner->source, start, current-1);
+  char *substr = substring(scanner->source, start, current - 1);
   double n = strtod(substr, NULL);
 
-  TokenLiteral *literal = malloc(sizeof(TokenLiteral)); 
-  *literal = (TokenLiteral){
-    .value.d = n,
-    .type = TL_DOUBLE
-  };
+  TokenLiteral *literal = malloc(sizeof(TokenLiteral));
+  *literal = (TokenLiteral){.value.d = n, .type = TL_DOUBLE};
 
   addTokenLiteral(scanner, NUMBER, literal);
 }
