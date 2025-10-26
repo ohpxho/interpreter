@@ -23,7 +23,6 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
-// TODO: make this shit run
 void run(const char *source) {
   UT_array *tokens;
   UT_icd token_icd = {sizeof(Token), NULL, NULL, NULL};
@@ -35,11 +34,11 @@ void run(const char *source) {
   scanTokens(&scanner);
 
   Token *p = NULL;
-  
-  while((p = (Token *)utarray_next(scanner.tokens, p))) {
+
+  while ((p = (Token *)utarray_next(scanner.tokens, p))) {
     printf("%s\n", tokenToString(p));
   }
-  
+
   utarray_free(tokens);
 }
 

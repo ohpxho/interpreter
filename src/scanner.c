@@ -123,8 +123,6 @@ void addTokenLiteral(Scanner *scanner, TokenType type, TokenLiteral *literal) {
     substr = substring(scanner->source, start, current - 1);
   }
 
-  printf("%s ", substr);
-
   Token token = {
       .type = type, .lexeme = substr, .literal = literal, .line = line};
   utarray_push_back(scanner->tokens, &token);
