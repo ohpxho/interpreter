@@ -21,18 +21,22 @@ operator       → "==" | "!=" | "<" | "<=" | ">" | ">="
  * */
 
 typedef struct {
+  Token *operator;
+  Letter *left;
+  Letter *right;
+} Expr;
+
+typedef struct {
   union {
     Literal *literal;
     Unary *unary;
     Binary *binary;
     Grouping *grouping;
   } value
-} Expression;
+} Letter;
 
 typedef struct {
-  TokenType type;
-  bool isLiteral(TokenType type);
-  void interpret();
+  
 } Literal;
 
 typedef struct {
@@ -40,14 +44,11 @@ typedef struct {
 } Grouping;
 
 typedef struct {
-
 } Binary;
 
 typedef struct {
-
 } Unary;
 
 typedef struct {
-
 } Operator;
 
