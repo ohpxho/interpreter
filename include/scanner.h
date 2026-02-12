@@ -1,13 +1,13 @@
 #ifndef SCANNER_H
 #define SCANNER_H
 
-#include <stdbool.h>
 #include "../lib/ut/utarray.h"
 #include "token.h"
+#include <stdbool.h>
 
 typedef struct {
   const char *source;
-  UT_array *tokens; 
+  UT_array *tokens;
 } Scanner;
 
 void scanTokens(Scanner *scanner);
@@ -26,6 +26,5 @@ char peekNext(Scanner *scanner);
 void string(Scanner *scanner);
 void number(Scanner *scanner);
 void keyword(Scanner *scanner);
-
 
 #endif

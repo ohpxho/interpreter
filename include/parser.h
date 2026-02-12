@@ -1,12 +1,13 @@
-#ifndef GRAMMAR_H
-#define GRAMMAR_H
+#ifndef PARSER_H
+#define PARSER_H
 
+#include "stdbool.h"
 #include "token.h"
 #include "token_type.h"
-#include "stdbool.h"
 
 /*
- *expression     → literal
+ *
+expression     → literal
                | unary
                | binary
                | grouping ;
@@ -20,35 +21,25 @@ operator       → "==" | "!=" | "<" | "<=" | ">" | ">="
  *
  * */
 
-typedef struct {
-  Token *operator;
-  Letter *left;
-  Letter *right;
-} Expr;
+typedef enum {
+  EXPR,
+  LITERAL,
+  GROUPING,
+  UNARY,
+  BINARY,
+  OPERATOR
+} GrammarRuleType;
 
 typedef struct {
-  union {
-    Literal *literal;
-    Unary *unary;
-    Binary *binary;
-    Grouping *grouping;
-  } value
-} Letter;
+  GrammarRuleType type;
+  Token *token;
+} ASTNode;
 
 typedef struct {
-  
-} Literal;
+  ASTNode *root;
+  ASTNode children[];
+} ASTTree;
 
-typedef struct {
+void init_parser(Token *token);
 
-} Grouping;
-
-typedef struct {
-} Binary;
-
-typedef struct {
-} Unary;
-
-typedef struct {
-} Operator;
-
+#endif // PARSER_H
