@@ -40,6 +40,11 @@ typedef struct {
   ASTNode children[];
 } ASTTree;
 
-void init_parser(Token *token);
+void expr(Token *token);
+void literal(Token *token);
+void grouping(Token *token);
+void binary(Token *token);
+void unary(Token *token);
+void op(Token *token);
 
 #endif // PARSER_H
